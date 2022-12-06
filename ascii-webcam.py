@@ -1,26 +1,30 @@
 import os, sys, cv2, curses
 from textwrap import dedent
 
+# img_path = 'C:\\Users\\msz\\Lewis\\cpsc\\sprint-08\\ASCII-Text-Converter\\assets\\cat.jpg'
+# C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg
+
 # x = 640
 # y = 480
-density = " .:'\"</~+=§#■╠@▓" # if lightmode: density.reverse()
+density = " .:'\"</~+=§#■╠@▓"
 mode = None
 img_path = None
 vid_path = None
 
 
-def convert_img(img_path):
-    # img_path = 'C:\\Users\\msz\\Lewis\\cpsc\\sprint-08\\ASCII-Text-Converter\\assets\\cat.jpg'
-    # C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\assets\cat.jpg
-
-    if ':' in img_path: # path is absolute
-       filename = img_path
-
+def get_absolute_path(path): # checks whether a file is likely to be absolute or relative, if relative finds the absolute version, and returns it
+    if 'Users' in path or ':' in path: pass 
     else: # path is relative
-        dirname = os.path.dirname(__file__) # gets absolute path of this file
-        filename = os.path.join(dirname, img_path) # merges directory tree of this file to find absolute path of the given relative img_path
+        dirname = os.path.dirname(__file__) # gets absolute path of ascii-webcam.py
+        path = os.path.join(dirname, path) # uses directory tree of this file and provided relative pathto find absolute path of the desired file
 
-    img_ascii = cv2.imread(filename)
+    return path
+
+
+def convert_img(img_path):
+    img = get_absolute_path(img_path)
+
+    img_ascii = cv2.imread(img)
     cv2.imshow('Image', img_ascii)
 
     cv2.waitKey(0)
@@ -28,11 +32,12 @@ def convert_img(img_path):
 
 
 def convert_vid(vid_path):
+    vid = get_absolute_path(vid_path)
     print('\nLoading video ...')
     # TODO: Implement video conversion
 
 
-def show_webcam(mirror=True):
+def show_webcam(mirror=True, theme=None):
     print('\nLoading camera ...')
     cap = cv2.VideoCapture(0)
     print('Press ESC on focused window to close')
@@ -53,10 +58,11 @@ while True:
     mode = input(dedent('''
     ############################
     #                           #
-    #        0 = QUIT           #
-    #        1 = Image          #
-    #        2 = Video          #
-    #        3 = Webcam         #
+    #       0 = QUIT            #
+    #       1 = Image           #
+    #       2 = Video           #
+    #       3 = Webcam          #
+    #       4 = Change Theme    #       
     #                           #
     #############################
     '''))
@@ -87,5 +93,9 @@ while True:
 
     elif mode == '3':
         show_webcam()
+
+    elif mode == '4':
+        pass
+    # TODO: implement theme changer (green on black), (white on black), (black on white), (blue on red)
 
     else: print('INVALID INPUT')
