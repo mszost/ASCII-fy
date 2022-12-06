@@ -6,22 +6,19 @@ from textwrap import dedent
 
 # x = 640
 # y = 480
-density = " .:'\"</~+=§#■╠@▓"
-mode = None
-img_path = None
-vid_path = None
+# density = " .:'\"</~+=§#■╠@▓"
 
 
 def get_absolute_path(path): # checks whether a file is likely to be absolute or relative, if relative finds the absolute version, and returns it
     if 'Users' in path or ':' in path: pass 
     else: # path is relative
         dirname = os.path.dirname(__file__) # gets absolute path of ascii-webcam.py
-        path = os.path.join(dirname, path) # uses directory tree of this file and provided relative pathto find absolute path of the desired file
+        path = os.path.join(dirname, path) # merges directory tree of this file and the provided relative path to find absolute path of the desired file
 
     return path
 
 
-def convert_img(img_path):
+def convert_img(img_path, theme=None):
     img = get_absolute_path(img_path)
 
     img_ascii = cv2.imread(img)
@@ -31,7 +28,7 @@ def convert_img(img_path):
     cv2.destroyAllWindows()
 
 
-def convert_vid(vid_path):
+def convert_vid(vid_path, theme=None):
     vid = get_absolute_path(vid_path)
     print('\nLoading video ...')
     # TODO: Implement video conversion
@@ -56,15 +53,17 @@ def show_webcam(mirror=True, theme=None):
 
 while True:
     mode = input(dedent('''
-    ############################
-    #                           #
-    #       0 = QUIT            #
-    #       1 = Image           #
-    #       2 = Video           #
-    #       3 = Webcam          #
-    #       4 = Change Theme    #       
-    #                           #
-    #############################
+    ###############################
+    #                             #
+    #        Controls Menu        #
+    #                             #
+    #         0  =  QUIT          #
+    #         1  =  Image         #
+    #         2  =  Video         #
+    #         3  =  Webcam        #
+    #         4  =  Theme         #       
+    #                             #
+    ###############################
     '''))
 
     if mode == '0': break
