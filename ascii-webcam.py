@@ -3,7 +3,10 @@ from textwrap import dedent
 
 # x = 640
 # y = 480
-mode, img_path, vid_path = None, None, None
+density = " .:'\"</~+=§#■╠@▓" # if lightmode: density.reverse()
+mode = None
+img_path = None
+vid_path = None
 
 
 def convert_img(img_path):
@@ -48,14 +51,14 @@ def show_webcam(mirror=True):
 
 while True:
     mode = input(dedent('''
-    #################
-    #               #
-    #  0 = QUIT     #
-    #  1 = Image    #
-    #  2 = Video    #
-    #  3 = Webcam   #
-    #               #
-    #################
+    ############################
+    #                           #
+    #        0 = QUIT           #
+    #        1 = Image          #
+    #        2 = Video          #
+    #        3 = Webcam         #
+    #                           #
+    #############################
     '''))
 
     if mode == '0': break
