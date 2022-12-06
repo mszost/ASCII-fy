@@ -9,13 +9,16 @@ from textwrap import dedent
 # density = " .:'\"</~+=§#■╠@▓"
 
 
+
 def get_absolute_path(path): # checks whether a file is likely to be absolute or relative, if relative finds the absolute version, and returns it
     if 'Users' in path or ':' in path: pass 
+    
     else: # path is relative
         dirname = os.path.dirname(__file__) # gets absolute path of ascii-webcam.py
         path = os.path.join(dirname, path) # merges directory tree of this file and the provided relative path to find absolute path of the desired file
 
     return path
+
 
 
 def convert_img(img_path, theme=None):
@@ -34,6 +37,7 @@ def convert_vid(vid_path, theme=None):
     # TODO: Implement video conversion
 
 
+
 def show_webcam(mirror=True, theme=None):
     print('\nLoading camera ...')
     cap = cv2.VideoCapture(0)
@@ -47,6 +51,7 @@ def show_webcam(mirror=True, theme=None):
         cv2.imshow('Camera view', frame)
 
         if cv2.waitKey(1) == 27: break  # esc to quit
+
     cv2.destroyAllWindows()
 
 
@@ -68,6 +73,7 @@ while True:
 
     if mode == '0': break
 
+
     if mode == '1':
         while True:
             img_path = input('\nEnter the path to the desired image: ')# At least 2 of the images I tested didn't work, but all of the others did. I couldn't figure out what was causing issues with the ones that didn't, as they had no noticeable differences from the ones that did work.
@@ -78,6 +84,7 @@ while True:
                 break
             except:
                 print('\nError converting image! Double check file path, or enter "0" to go back.')
+
 
     elif mode == '2':
         while True:
@@ -90,11 +97,14 @@ while True:
             except:
                 print('\nError converting video! Double check file path, or enter "0" to go back.')
 
+
     elif mode == '3':
         show_webcam()
+
 
     elif mode == '4':
         pass
     # TODO: implement theme changer (green on black), (white on black), (black on white), (blue on red)
+
 
     else: print('INVALID INPUT')
