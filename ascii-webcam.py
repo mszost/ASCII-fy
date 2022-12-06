@@ -1,13 +1,3 @@
-######################################################################################### 
-#                                                                                       #
-#   ASCII image/video converter for Python                                              #
-#   Requires Numpy, OpenCV, and curses libraries to be installed separately             #
-#   Copyright Michael Szostak 2022 (MIT License)                                        #
-#   Discord: wikey#4133                                                                 #
-#   Email: mszo@tuta.io                                                                 #
-#                                                                                       #
-#########################################################################################
-
 import os, sys, cv2, curses
 from textwrap import dedent
 
