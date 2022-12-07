@@ -61,18 +61,34 @@ def get_abs_path(path): # checks whether a file is likely to be absolute or rela
 
 
 def convert_img(img_path, theme=None):
-    img = get_abs_path(img_path)
+    
+    while True:
+        if img_path == 'q': return None
+
+        try:
+            img = get_abs_path(img_path)
+            break
+        except: 
+            c.beep()
+            win.addstr(13, 0, 'Error converting image! Try again or enter "q" to go back')
+            win.refresh()
 
     img_ascii = cv2.imread(img)
-    #cv2.imshow('Image', img_ascii)
+    cv2.imshow('Image', img_ascii)
 
+   # gray = cv2.resize(cv2.cvtColor(img_ascii), cv2.COLOR_BGR2GRAY), (dx, int(dx*0.75))
+
+    #toAscii(gray, win)
+    #win.refresh()
+
+    #TODO: convert and display image
+
+    win.nodelay(True)
     if win.getch() == 27:
+    #cv2.waitKey(0) == 27:
         cv2.destroyAllWindows()
 
     # Convert image to grayscale --->    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    # TODO: translate img into ASCII
-    # fix bug that occurs when typing in terminal with image open
 
 
 
@@ -104,7 +120,7 @@ def show_webcam(mirror=True, theme=None):
         toAscii(gray, win)
         win.refresh()
 
-        cv2.imshow('Camera view', frame)
+        # cv2.imshow('Camera view', frame)
 
         if win.getch() == 27: 
             run_webcam = False  # esc to quit
@@ -143,15 +159,8 @@ def main(win):
             while True:
                 img_path = cr_input(12, 0, 'Enter the path to the desired image, or "q" to go back:')
                 win.refresh()
-                if img_path == 'q': break
 
-                try:
-                    convert_img(img_path)
-                    break
-                except:
-                    c.beep()
-                    win.addstr(13, 0, 'Error converting image! Try again or enter "q" to go back')
-                    win.refresh()
+                if convert_img(img_path) == None: break # function returns None when user enters q to go back
 
 
         elif mode == int(ord('2')):
@@ -177,36 +186,9 @@ def main(win):
 
 
 
+
+
 c.wrapper(main)
 
 c.endwin()
-
 print('\nExiting ...\n')
-
-
-
-'''
-
-while True:
-# get frame from webcam
-_, frame = cap.read()
-
-# convert frame to grayscale
-frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-# resize frame for better display on curses screen
-frame = cv2.resize(frame, (80, 40))
-
-# clear curses screen
-stdscr.clear()
-
-# loop through frame and add each pixel value to curses screen
-for i in range(frame.shape[0]):
-    for j in range(frame.shape[1]):
-        stdscr.addstr(i, j, str(frame[i,j]))
-
-# refresh curses screen
-stdscr.refresh()
-
-
-'''
