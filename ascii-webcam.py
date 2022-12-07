@@ -1,15 +1,15 @@
 import os, sys, cv2
 import curses as c
 from textwrap import dedent
+from time import sleep
 
 
-win = c.initscr()
 #C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg
+win = c.initscr()
 dx = 640
 dy = 480
 density = " .:'\"</~+=§#■╠@▓"
 dmap = len(density)
-
 
 
 def cr_input(row, col, prompt, win=win): #input function for curses
@@ -49,7 +49,7 @@ def toAscii(pic, win):
 
 
 
-def get_abs_path(path): # checks whether a file is likely to be absolute or relative, if relative finds the absolute form, and returns it. Should work on both mac and windows
+def get_abs_path(path): # checks whether a file is likely to be absolute or relative, if relative finds the absolute form, and returns it. Should work on both mac and windows (i hope)
     if 'Users' in path or ':' in path: pass 
 
     else: # path is relative
@@ -64,10 +64,15 @@ def convert_img(img_path, theme=None):
     img = get_abs_path(img_path)
 
     img_ascii = cv2.imread(img)
-    cv2.imshow('Image', img_ascii)
+    #cv2.imshow('Image', img_ascii)
 
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    if win.getch() == 27:
+        cv2.destroyAllWindows()
+
+    # Convert image to grayscale --->    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # TODO: translate img into ASCII
+    # fix bug that occurs when typing in terminal with image open
 
 
 
@@ -80,13 +85,15 @@ def convert_vid(vid_path, theme=None):
 
 
 def show_webcam(mirror=True, theme=None):
+    win.nodelay(True)
     win.addstr('\nLoading camera ...')
     win.addstr('\nPress ESC to close')
     win.refresh()
 
     cap = cv2.VideoCapture(0)
+    run_webcam = True
 
-    while True:
+    while run_webcam:
         ret, frame = cap.read()
 
         if mirror: frame = cv2.flip(frame, 1)
@@ -99,7 +106,8 @@ def show_webcam(mirror=True, theme=None):
 
         cv2.imshow('Camera view', frame)
 
-        if cv2.waitKey(1) == 27: break  # esc to quit
+        if win.getch() == 27: 
+            run_webcam = False  # esc to quit
 
     cv2.destroyAllWindows()
 
@@ -107,6 +115,7 @@ def show_webcam(mirror=True, theme=None):
 
 def main(win):
     while True:
+        win.nodelay(False)
         c.noecho()
         win.keypad(False)
         win.clear()
@@ -120,14 +129,15 @@ def main(win):
         #         1  =  Image         #
         #         2  =  Video         #
         #         3  =  Webcam        #
-        #         4  =  Theme         #       
+        #         4  =  Theme         #
+        #        ESC = Exit           #
         #                             #
         ###############################
         '''))
 
         mode = win.getch()
 
-        if mode == 27: break #esc 
+        if mode == 27: break # 27 = esc key 
 
         if mode == int(ord('1')):
             while True:
@@ -144,7 +154,7 @@ def main(win):
                     win.refresh()
 
 
-        elif mode == ord('2'):
+        elif mode == int(ord('2')):
             while True:
                 vid_path = win.getstr('\nEnter the path to the desired video: ')
                 if vid_path == '0': break
@@ -161,7 +171,7 @@ def main(win):
             show_webcam(win)
 
 
-        elif mode == ord('4'):
+        elif mode == int(ord('4')):
             pass
         # TODO: implement theme changer (green on black), (white on black), (black on white), (blue on red)
 
@@ -170,3 +180,33 @@ def main(win):
 c.wrapper(main)
 
 c.endwin()
+
+print('\nExiting ...\n')
+
+
+
+'''
+
+while True:
+# get frame from webcam
+_, frame = cap.read()
+
+# convert frame to grayscale
+frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+# resize frame for better display on curses screen
+frame = cv2.resize(frame, (80, 40))
+
+# clear curses screen
+stdscr.clear()
+
+# loop through frame and add each pixel value to curses screen
+for i in range(frame.shape[0]):
+    for j in range(frame.shape[1]):
+        stdscr.addstr(i, j, str(frame[i,j]))
+
+# refresh curses screen
+stdscr.refresh()
+
+
+'''
