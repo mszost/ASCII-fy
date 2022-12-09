@@ -2,10 +2,11 @@ import os, sys, cv2, time
 import curses as c
 from textwrap import dedent
 
-#C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg 
-dx = 640 
-dy = 480 
-
+#C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg
+ 
+# dx, dy = camera resolution
+dx = 1280
+dy = 720
 density = " .:'\"</~+=§#@╠■▓"
 dmap = len(density)
 
@@ -32,14 +33,13 @@ def init_themes():
     c.init_color(20, 1000, 1000, 1000)  # white
     c.init_color(21, 0, 830, 200)       # green
     c.init_color(22, 260, 0, 100)       # maroon
-    c.init_color(23, 885, 750, 750)     # pink
-    c.init_color(24, 800, 0, 0)         # magenta
+    c.init_color(23, 880, 650, 450)     # pale-orange
+    c.init_color(24, 800, 0, 300)       # magenta
     c.init_color(25, 0, 150, 500)       # blue
-    c.init_color(26, 300, 200, 0)       # coffee
-    c.init_color(27, 150, 1000, 900)    # mint
-    c.init_color(28, 800, 500, 0)       # orange
-    c.init_color(29, 400, 100, 0)       # red-orange
-    c.init_color(30, 0, 600, 600)       # light-blue
+    c.init_color(26, 350, 250, 0)       # coffee
+    c.init_color(27, 150, 1000, 840)    # cyan
+    c.init_color(28, 800, 650, 0)       # yelllow-orange
+    c.init_color(29, 360, 90, 0)        # red-orange
 
     # setting up pairs (themes) with the custom color IDs        
     c.init_pair(1, 21, 19)              # matrix
@@ -47,8 +47,8 @@ def init_themes():
     c.init_pair(3, 23, 22)              # raspberry
     c.init_pair(4, 17, 18)              # noctua 
     c.init_pair(5, 24, 25)              # vaporwave 
-    c.init_pair(6, 28, 29)              # sunset TODO
-    c.init_pair(7, 27, 30)              # winter
+    c.init_pair(6, 28, 29)              # sunset
+    c.init_pair(7, 27, 25)              # melange
     c.init_pair(8, 20, 25)              # powershell    
 
 
@@ -58,15 +58,15 @@ def theme_menu():
     win.addstr(dedent(('''
     Enter the number corresponding to the desired terminal theme.
 
-      0  =  Grayscale  ------- ( default        )
-      1  =  Matrix  ---------- ( black/green    )
-      2  =  Coffee  ---------- ( black/brown    )
-      3  =  Raspberry  ------- ( red/pink       )
-      4  =  Noctua  ---------- ( brown/beige    )
-      5  =  Vaporwave  ------- ( blue / magenta )
-      6  =  Sunset  ---------- ( red/orange     )
-      7  =  Winter  ---------- ( blue/blue      )
-      8  =  PowerShell  ------ ( blue/white     )
+      0  =  Grayscale  ------- ( default       )
+      1  =  Matrix  ---------- ( black/green   )
+      2  =  Coffee  ---------- ( black/brown   )
+      3  =  Raspberry  ------- ( red/pink      )
+      4  =  Noctua  ---------- ( brown/beige   )
+      5  =  Vaporwave  ------- ( blue/magenta  )
+      6  =  Sunset  ---------- ( orange/yellow )
+      7  =  Melange  --------- ( blue/cyan     )
+      8  =  PowerShell  ------ ( blue/white    )
     ''')))
 
     win.refresh()
@@ -84,11 +84,11 @@ def toAscii(frame):
         for column in range(width-1):
 
             y = frame[int(row / float(height) * dy)] 
-            # y = frame index at [divide row by height, multiply by total number of rows in frame] 
+            # y = frame index at [divide row by height, multiply by y camera dimension] 
             # gets current y pixel (the row number that the cursor is at in the frame)
 
             x = y[int(column / float(width) * dx)]
-            # x = row index at [divide column by height, multiply by total number of columns in row]
+            # x = row index at [divide column by height, multiply by x camera dimension]
             # gets current x pixel (the column number that the cursor is at in the row y)
 
             pixel_brightness = x / max_brightness
@@ -112,7 +112,11 @@ def get_abs_path(path):
     return path
 
 
-def convert_img(img_path):
+def convert_img():
+    win.addstr('\nSample image: enter "cat.jpg"', theme)
+    img_path = cr_input(14, 0, 'Enter the path to the desired image, or "q" to go back:')
+    win.refresh()
+
     while True:
         if img_path == 'q': return None
 
@@ -134,11 +138,9 @@ def convert_img(img_path):
 
 
 
-def convert_vid(vid_path):
-    vid = get_abs_path(vid_path)
-    win.addstr('\nLoading video ...', theme)
-    win.refresh()
+def convert_vid():
     # TODO: Implement video conversion
+    pass
 
 
 
@@ -171,8 +173,8 @@ def main(win):
     init_themes()
 
     while True:
-        win.bkgd(' ', theme)
         c.noecho()
+        win.bkgd(' ', theme)
         win.nodelay(False)
         win.keypad(False)
         win.clear()
@@ -194,24 +196,15 @@ def main(win):
 
         mode = win.getch()
 
-        if mode == int(ord('1')):
-            while True:
-                win.addstr('\nSample image: enter "cat.jpg"', theme)
-                img_path = cr_input(14, 0, 'Enter the path to the desired image, or "q" to go back:')
-                win.refresh()
+        if mode == int(ord('1')):       # TODO
+            convert_img()
 
-                if convert_img(img_path) == None: break 
-                # function returns None when user enters q to go back
-
-
-        elif mode == int(ord('2')):
-            while True:
-                break
-
+        elif mode == int(ord('2')):     # TODO
+            convert_vid()
+        
 
         elif mode == int(ord('3')): 
             show_webcam()
-
 
         elif mode == int(ord('4')):
             theme_menu()
@@ -226,3 +219,4 @@ win.addstr('\nExiting ...', theme)
 win.refresh()
 time.sleep(1)
 c.endwin()
+
