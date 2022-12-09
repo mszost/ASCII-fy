@@ -1,67 +1,118 @@
-import os, sys, cv2
+import os, sys, cv2, time
 import curses as c
 from textwrap import dedent
-from time import sleep
 
+#C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg 
+dx = 640 
+dy = 480 
 
-#C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg
-win = c.initscr()
-dx = 640
-dy = 480
-density = " .:'\"</~+=§#■╠@▓"
+density = " .:'\"</~+=§#@╠■▓"
 dmap = len(density)
 
+win = c.initscr()
 
-def cr_input(row, col, prompt, win=win): #input function for curses
+
+# serves as alternative to input() compatible with the curses environment
+def cr_input(row, col, prompt, win=win): 
     c.echo() 
-    win.addstr(row, col, prompt)
+    win.addstr(row, col, prompt, theme)
     win.refresh()
     userinput = win.getstr(row + 1, col, 200)
-
-    return userinput.decode('utf-8')  # .decode('utf-8') converts "bytes object" from win.addstr() into a unicode string compatbile with get_abs_path()
-
-
-
-def toAscii(pic, win):
-    global operating
-    m = 0
-    for y in pic:
-        tm = max(y)
-        if tm > m:
-            m = tm
-
-    fx = 0
-    fy = 0
-    h,w = win.getmaxyx()
-
-    #for y in pic:
-        #for x in y:
-    for _y in range(h-1):
-        for _x in range(w-1):
-            y = pic[int(_y/float(h) * len(pic))]
-            x = y[int(_x/float(w) * len(y))]
-
-            win.addstr(_y, _x, density[int(x/m*(dmap-1))], c.color_pair(1))
-            fx += 1
-        fy += 1
-        fx = 0
-    operating = False
+    return userinput.decode('utf-8')  
+    # decode('utf-8') converts "bytes object" returned from win.addstr()
+    # into a unicode string compatbile with get_abs_path() and other operations
 
 
 
-def get_abs_path(path): # checks whether a file is likely to be absolute or relative, if relative finds the absolute form, and returns it. Should work on both mac and windows (i hope)
+def init_themes():
+    # custom color IDs starting at 17. 0-16 are used by curses for basic 8-bit colors 
+    c.init_color(17, 875, 790, 670)     # beige
+    c.init_color(18, 165, 65, 0)        # brown 
+    c.init_color(19, 0, 0, 0)           # black
+    c.init_color(20, 1000, 1000, 1000)  # white
+    c.init_color(21, 0, 830, 200)       # green
+    c.init_color(22, 260, 0, 100)       # maroon
+    c.init_color(23, 885, 750, 750)     # pink
+    c.init_color(24, 800, 0, 0)         # magenta
+    c.init_color(25, 0, 150, 500)       # blue
+    c.init_color(26, 300, 200, 0)       # coffee
+    c.init_color(27, 150, 1000, 900)    # mint
+    c.init_color(28, 800, 500, 0)       # orange
+    c.init_color(29, 400, 100, 0)       # red-orange
+    c.init_color(30, 0, 600, 600)       # light-blue
+
+    # setting up pairs (themes) with the custom color IDs        
+    c.init_pair(1, 21, 19)              # matrix
+    c.init_pair(2, 26, 19)              # coffee
+    c.init_pair(3, 23, 22)              # raspberry
+    c.init_pair(4, 17, 18)              # noctua 
+    c.init_pair(5, 24, 25)              # vaporwave 
+    c.init_pair(6, 28, 29)              # sunset TODO
+    c.init_pair(7, 27, 30)              # winter
+    c.init_pair(8, 20, 25)              # powershell    
+
+
+
+def theme_menu():
+    global theme
+    win.addstr(dedent(('''
+    Enter the number corresponding to the desired terminal theme.
+
+      0  =  Grayscale  ------- ( default        )
+      1  =  Matrix  ---------- ( black/green    )
+      2  =  Coffee  ---------- ( black/brown    )
+      3  =  Raspberry  ------- ( red/pink       )
+      4  =  Noctua  ---------- ( brown/beige    )
+      5  =  Vaporwave  ------- ( blue / magenta )
+      6  =  Sunset  ---------- ( red/orange     )
+      7  =  Winter  ---------- ( blue/blue      )
+      8  =  PowerShell  ------ ( blue/white     )
+    ''')))
+
+    win.refresh()
+    try: theme = c.color_pair(int(win.getkey()))
+    except ValueError: return None
+    #TODO: use a text file and the os lib to store theme setting for subsequent program executions
+
+
+
+def toAscii(frame):
+    max_brightness = max(max(row) for row in frame)
+    height, width = win.getmaxyx()
+
+    for row in range(height-1):
+        for column in range(width-1):
+
+            y = frame[int(row / float(height) * dy)] 
+            # y = frame index at [divide row by height, multiply by total number of rows in frame] 
+            # gets current y pixel (the row number that the cursor is at in the frame)
+
+            x = y[int(column / float(width) * dx)]
+            # x = row index at [divide column by height, multiply by total number of columns in row]
+            # gets current x pixel (the column number that the cursor is at in the row y)
+
+            pixel_brightness = x / max_brightness
+
+            win.addstr(row, column, density[int(pixel_brightness * (dmap - 1))], theme)
+            # displays the appropriate ASCII character at the current coordinate
+            # character is determined by coordinate's brightness
+
+
+
+def get_abs_path(path): 
     if 'Users' in path or ':' in path: pass 
+    # Determines if absolute
+    # Should work on both mac and windows in theory, but I don't have a mac to test on
 
     else: # path is relative
-        dirname = os.path.dirname(__file__) # gets absolute path of ascii-webcam.py
-        path = os.path.join(dirname, path) # merges directory tree of this file and the provided relative path to find absolute path of the desired file
-
+        dirname = os.path.dirname(__file__) 
+        path = os.path.join(dirname, path) 
+        # gets absolute path of this python file, merges directory tree and
+        # the provided relative path to find the absolute path of the desired file
     return path
 
 
-
-def convert_img(img_path, theme=None):
-    
+def convert_img(img_path):
     while True:
         if img_path == 'q': return None
 
@@ -70,40 +121,31 @@ def convert_img(img_path, theme=None):
             break
         except: 
             c.beep()
-            win.addstr(13, 0, 'Error converting image! Try again or enter "q" to go back')
+            win.addstr(13, 0, 'Error converting image! Try again or enter "q" to go back', theme)
             win.refresh()
 
     img_ascii = cv2.imread(img)
     cv2.imshow('Image', img_ascii)
 
-   # gray = cv2.resize(cv2.cvtColor(img_ascii), cv2.COLOR_BGR2GRAY), (dx, int(dx*0.75))
-
-    #toAscii(gray, win)
-    #win.refresh()
-
-    #TODO: convert and display image
-
-    win.nodelay(True)
-    if win.getch() == 27:
-    #cv2.waitKey(0) == 27:
+    #win.nodelay(True)
+    #if win.getch() == 27:
+    if cv2.waitKey(0) == 27:
         cv2.destroyAllWindows()
 
-    # Convert image to grayscale --->    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-
-def convert_vid(vid_path, theme=None):
+def convert_vid(vid_path):
     vid = get_abs_path(vid_path)
-    win.addstr('\nLoading video ...')
+    win.addstr('\nLoading video ...', theme)
     win.refresh()
     # TODO: Implement video conversion
 
 
 
-def show_webcam(mirror=True, theme=None):
+def show_webcam(mirror=True):
     win.nodelay(True)
-    win.addstr('\nLoading camera ...')
-    win.addstr('\nPress ESC to close')
+    win.addstr('\nLoading camera ...', theme)
+    win.addstr('\nPress ESC to close', theme)
     win.refresh()
 
     cap = cv2.VideoCapture(0)
@@ -111,84 +153,76 @@ def show_webcam(mirror=True, theme=None):
 
     while run_webcam:
         ret, frame = cap.read()
-
         if mirror: frame = cv2.flip(frame, 1)
 
-        c.init_pair(1, c.COLOR_GREEN, c.COLOR_BLACK)
-        gray = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (dx, int(dx*0.75)))
+        frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (dx, dy))
 
-        toAscii(gray, win)
-        win.refresh()
-
-        # cv2.imshow('Camera view', frame)
+        toAscii(frame)
 
         if win.getch() == 27: 
-            run_webcam = False  # esc to quit
-
+            run_webcam = False 
     cv2.destroyAllWindows()
 
 
 
 def main(win):
+    global theme
+    theme = c.color_pair(0)
+    init_themes()
+
     while True:
-        win.nodelay(False)
+        win.bkgd(' ', theme)
         c.noecho()
+        win.nodelay(False)
         win.keypad(False)
         win.clear()
         win.refresh()
 
-        win.addstr(0,0, dedent('''
+        win.addstr(dedent('''
         ###############################
         #                             #
         #        Controls Menu        #
         #                             #
-        #         1  =  Image         #
-        #         2  =  Video         #
-        #         3  =  Webcam        #
-        #         4  =  Theme         #
+        #        1  =  Image          #
+        #        2  =  Video          #
+        #        3  =  Webcam         #
+        #        4  =  Themes         #
         #        ESC = Exit           #
         #                             #
         ###############################
-        '''))
+        '''), theme)
 
         mode = win.getch()
 
-        if mode == 27: break # 27 = esc key 
-
         if mode == int(ord('1')):
             while True:
-                img_path = cr_input(12, 0, 'Enter the path to the desired image, or "q" to go back:')
+                win.addstr('\nSample image: enter "cat.jpg"', theme)
+                img_path = cr_input(14, 0, 'Enter the path to the desired image, or "q" to go back:')
                 win.refresh()
 
-                if convert_img(img_path) == None: break # function returns None when user enters q to go back
+                if convert_img(img_path) == None: break 
+                # function returns None when user enters q to go back
 
 
         elif mode == int(ord('2')):
             while True:
-                vid_path = win.getstr('\nEnter the path to the desired video: ')
-                if vid_path == '0': break
-
-                try:
-                    convert_vid(vid_path)
-                    break
-                except:
-                    win.addstr('\nError converting video! Double check file path, or enter "0" to go back.')
-                    win.refresh()
+                break
 
 
         elif mode == int(ord('3')): 
-            show_webcam(win)
+            show_webcam()
 
 
         elif mode == int(ord('4')):
-            pass
-        # TODO: implement theme changer (green on black), (white on black), (black on white), (blue on red)
+            theme_menu()
 
-
-
+        elif mode == 27: # 27 = esc key 
+            break
 
 
 c.wrapper(main)
 
+win.addstr('\nExiting ...', theme)
+win.refresh()
+time.sleep(1)
 c.endwin()
-print('\nExiting ...\n')
