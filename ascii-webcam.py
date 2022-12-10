@@ -1,12 +1,11 @@
-import os, sys, cv2, time
+import os, cv2, time
 import curses as c
 from textwrap import dedent
 
 #C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg
- 
-# dx, dy = camera resolution
-dx = 1280
-dy = 720
+
+cx = 480 # webcam pixels x 
+cy = 640 # webcam pixels y 
 density = " .:'\"</~+=§#@╠■▓"
 dmap = len(density)
 
@@ -83,11 +82,11 @@ def toAscii(frame):
     for row in range(height-1):
         for column in range(width-1):
 
-            y = frame[int(row / float(height) * dy)] 
+            y = frame[int(row / float(height) * cx)] 
             # y = frame index at [divide row by height, multiply by y camera dimension] 
             # gets current y pixel (the row number that the cursor is at in the frame)
 
-            x = y[int(column / float(width) * dx)]
+            x = y[int(column / float(width) * cy)]
             # x = row index at [divide column by height, multiply by x camera dimension]
             # gets current x pixel (the column number that the cursor is at in the row y)
 
@@ -157,7 +156,7 @@ def show_webcam(mirror=True):
         ret, frame = cap.read()
         if mirror: frame = cv2.flip(frame, 1)
 
-        frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (dx, dy))
+        frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (cy, cx))
 
         toAscii(frame)
 
@@ -219,4 +218,3 @@ win.addstr('\nExiting ...', theme)
 win.refresh()
 time.sleep(1)
 c.endwin()
-
