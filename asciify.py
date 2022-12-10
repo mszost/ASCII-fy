@@ -4,8 +4,8 @@ from textwrap import dedent
 
 #C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg
 
-cx = 480 # webcam pixels x 
-cy = 640 # webcam pixels y 
+cx = 640 # webcam pixels x 
+cy = 480 # webcam pixels y 
 density = " .:'\"</~+=§#@╠■▓"
 dmap = len(density)
 
@@ -75,18 +75,18 @@ def theme_menu():
 
 
 
-def toAscii(frame):
+def asciify(frame):
     max_brightness = max(max(row) for row in frame)
     height, width = win.getmaxyx()
 
     for row in range(height-1):
         for column in range(width-1):
 
-            y = frame[int(row / float(height) * cx)] 
+            y = frame[int(row / float(height) * cy)] 
             # y = frame index at [divide row by height, multiply by y camera dimension] 
             # gets current y pixel (the row number that the cursor is at in the frame)
 
-            x = y[int(column / float(width) * cy)]
+            x = y[int(column / float(width) * cx)]
             # x = row index at [divide column by height, multiply by x camera dimension]
             # gets current x pixel (the column number that the cursor is at in the row y)
 
@@ -99,9 +99,8 @@ def toAscii(frame):
 
 
 def get_abs_path(path): 
+    # Determine if absolute
     if 'Users' in path or ':' in path: pass 
-    # Determines if absolute
-    # Should work on both mac and windows in theory, but I don't have a mac to test on
 
     else: # path is relative
         dirname = os.path.dirname(__file__) 
@@ -113,27 +112,39 @@ def get_abs_path(path):
 
 def convert_img():
     win.addstr('\nSample image: enter "cat.jpg"', theme)
-    img_path = cr_input(14, 0, 'Enter the path to the desired image, or "q" to go back:')
-    win.refresh()
 
     while True:
+        img_path = cr_input(14, 0, 'Enter the path to the desired image, or "q" to go back:')
+        win.refresh()
         if img_path == 'q': return None
 
         try:
             img = get_abs_path(img_path)
+            img = cv2.imread(img)
+            cv2.imshow('Image', img)
             break
         except: 
             c.beep()
-            win.addstr(13, 0, 'Error converting image! Try again or enter "q" to go back', theme)
+            win.addstr(14, 85, 'Error converting image!', theme)
             win.refresh()
 
-    img_ascii = cv2.imread(img)
-    cv2.imshow('Image', img_ascii)
 
-    #win.nodelay(True)
-    #if win.getch() == 27:
-    if cv2.waitKey(0) == 27:
-        cv2.destroyAllWindows()
+    
+        while run_webcam:
+            ret, frame = img.read()
+
+            frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (cx, cy)) 
+        # convert to grayscale and 640x480
+
+            asciify(frame)
+
+            if win.getch() == 27: 
+                run_webcam = False 
+    cv2.destroyAllWindows()
+
+
+    #if cv2.waitKey(0) == 27:
+        #cv2.destroyAllWindows()
 
 
 
@@ -156,9 +167,10 @@ def show_webcam(mirror=True):
         ret, frame = cap.read()
         if mirror: frame = cv2.flip(frame, 1)
 
-        frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (cy, cx))
+        frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (cx, cy)) 
+        # convert to grayscale and 640x480
 
-        toAscii(frame)
+        asciify(frame)
 
         if win.getch() == 27: 
             run_webcam = False 
