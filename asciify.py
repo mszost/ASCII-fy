@@ -2,11 +2,11 @@ import os, cv2, time
 import curses as c
 from textwrap import dedent
 
-#C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg
 
 cx = 640 # webcam pixels x 
 cy = 480 # webcam pixels y 
-density = " .:'\"</~+=§#@╠■▓"
+
+density = " .:-=+*#%@"    
 dmap = len(density)
 
 win = c.initscr()
@@ -73,30 +73,7 @@ def theme_menu():
     except ValueError: return None
     #TODO: use a text file and the os lib to store theme setting for subsequent program executions
 
-
-
-def asciify(frame):
-    max_brightness = max(max(row) for row in frame)
-    height, width = win.getmaxyx()
-
-    for row in range(height-1):
-        for column in range(width-1):
-
-            y = frame[int(row / float(height) * cy)] 
-            # y = frame index at [divide row by height, multiply by y camera dimension] 
-            # gets current y pixel (the row number that the cursor is at in the frame)
-
-            x = y[int(column / float(width) * cx)]
-            # x = row index at [divide column by height, multiply by x camera dimension]
-            # gets current x pixel (the column number that the cursor is at in the row y)
-
-            pixel_brightness = x / max_brightness
-
-            win.addstr(row, column, density[int(pixel_brightness * (dmap - 1))], theme)
-            # displays the appropriate ASCII character at the current coordinate
-            # character is determined by coordinate's brightness
-
-
+"""
 
 def get_abs_path(path): 
     # Determine if absolute
@@ -110,6 +87,7 @@ def get_abs_path(path):
     return path
 
 
+
 def convert_img():
     win.addstr('\nSample image: enter "cat.jpg"', theme)
 
@@ -118,28 +96,19 @@ def convert_img():
         win.refresh()
         if img_path == 'q': return None
 
-        try:
-            img = get_abs_path(img_path)
-            img = cv2.imread(img)
-            cv2.imshow('Image', img)
-            break
-        except: 
-            c.beep()
-            win.addstr(14, 85, 'Error converting image!', theme)
-            win.refresh()
+        
+        img = cv2.imread(img_path)
+        cv2.imshow('Image', img)
+            
+         
+        c.beep()
+        win.addstr(14, 85, 'Error converting image!', theme)
+        win.refresh()
 
 
-    
-        while run_webcam:
-            ret, frame = img.read()
 
-            frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (cx, cy)) 
-        # convert to grayscale and 640x480
-
-            asciify(frame)
-
-            if win.getch() == 27: 
-                run_webcam = False 
+        if cv2.waitkey(0) == 27: 
+            break 
     cv2.destroyAllWindows()
 
 
@@ -149,10 +118,9 @@ def convert_img():
 
 
 def convert_vid():
-    # TODO: Implement video conversion
     pass
 
-
+"""
 
 def show_webcam(mirror=True):
     win.nodelay(True)
@@ -167,14 +135,35 @@ def show_webcam(mirror=True):
         ret, frame = cap.read()
         if mirror: frame = cv2.flip(frame, 1)
 
-        frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (cx, cy)) 
+        frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (cx, cy), interpolation=cv2.INTER_AREA) 
         # convert to grayscale and 640x480
 
         asciify(frame)
+        win.refresh()
 
         if win.getch() == 27: 
             run_webcam = False 
     cv2.destroyAllWindows()
+
+
+
+def asciify(frame):
+    max_brightness = max(max(row) for row in frame)
+    height, width = win.getmaxyx() # terminal dimensions
+
+    for row in range(height-1):
+        for column in range(width-1):
+
+            # to get brightness of each pixel, first find the terminal window indicies (x, y) corresponding to camera frame indicies (cx, cy)
+            # !!! the camera/frame and window are most likely different dimensions so they must be scaled w/ equation:
+            # win index = frame index / win dimensions * frame dimensions
+            y = frame[int(row / float(height) * cy)] 
+            x = y[int(column / float(width) * cx)]
+
+            pixel_brightness = x / max_brightness
+
+            win.addstr(row, column, density[int(pixel_brightness * (dmap - 1))], theme)
+            # displays the appropriate ASCII character at the current coordinate
 
 
 
@@ -207,11 +196,17 @@ def main(win):
 
         mode = win.getch()
 
-        if mode == int(ord('1')):       # TODO
-            convert_img()
+        if mode == int(ord('1')):       
+            #convert_img()
+            win.addstr('Not yet implemented')
+            win.refresh()
+            time.sleep(1)
 
-        elif mode == int(ord('2')):     # TODO
-            convert_vid()
+        elif mode == int(ord('2')):     
+            #convert_vid()
+            win.addstr('Not yet implemented')
+            win.refresh()
+            time.sleep(1)
         
 
         elif mode == int(ord('3')): 
