@@ -7,7 +7,7 @@ Requires OpenCV and curses libraries to be installed separately before running
 ---
 
 
-#### ***Credits:***
+#### ***Credits***
 
 
 *weighted ASCII density string from:* 
@@ -30,6 +30,8 @@ https://stackoverflow.com/questions/21784625/how-to-input-a-word-in-ncurses-scre
 ---
 
 
-#### ***Contact***                                
-Discord:  wikey#4133
-Email:  michaeldszostak@lewisu.edu  *OR*  mszo@tuta.io
+#### ***Contact***
+
+*Discord:*  wikey#4133
+
+*Email:*  michaeldszostak@lewisu.edu  *OR*  mszo@tuta.io
