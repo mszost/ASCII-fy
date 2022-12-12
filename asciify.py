@@ -2,6 +2,7 @@ import os, cv2, time
 import curses as c
 from textwrap import dedent
 
+#   C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg
 
 cx = 640 # webcam pixels x 
 cy = 480 # webcam pixels y 
@@ -73,7 +74,7 @@ def theme_menu():
     except ValueError: return None
     #TODO: use a text file and the os lib to store theme setting for subsequent program executions
 
-"""
+
 
 def get_abs_path(path): 
     # Determine if absolute
@@ -89,38 +90,35 @@ def get_abs_path(path):
 
 
 def convert_img():
-    win.addstr('\nSample image: enter "cat.jpg"', theme)
-
     while True:
+        win.addstr('Sample image "cat.jpg"', theme)
         img_path = cr_input(14, 0, 'Enter the path to the desired image, or "q" to go back:')
         win.refresh()
+
         if img_path == 'q': return None
 
-        
-        img = cv2.imread(img_path)
-        cv2.imshow('Image', img)
-            
-         
-        c.beep()
-        win.addstr(14, 85, 'Error converting image!', theme)
-        win.refresh()
+        try:
+            img = get_abs_path(img_path)
+            break
+        except: 
+            c.beep()
+            win.addstr(13, 0, 'Error converting image! Try again or enter "q" to go back', theme)
+            win.refresh()
 
+    img_ascii = cv2.imread(img)
+    cv2.imshow('Image', img_ascii)
 
-
-        if cv2.waitkey(0) == 27: 
-            break 
-    cv2.destroyAllWindows()
-
-
-    #if cv2.waitKey(0) == 27:
-        #cv2.destroyAllWindows()
+    #win.nodelay(True)
+    #if win.getch() == 27:
+    if cv2.waitKey(0) == 27:
+        cv2.destroyAllWindows()
 
 
 
 def convert_vid():
     pass
 
-"""
+
 
 def show_webcam(mirror=True):
     win.nodelay(True)
@@ -181,34 +179,34 @@ def main(win):
         win.refresh()
 
         win.addstr(dedent('''
-        ###############################
-        #                             #
-        #        Controls Menu        #
-        #                             #
-        #        1  =  Image          #
-        #        2  =  Video          #
-        #        3  =  Webcam         #
-        #        4  =  Themes         #
-        #        ESC = Exit           #
-        #                             #
-        ###############################
+              Welcome to ASCII-fy!      
+        ################################
+        #                              #
+        #         Controls Menu        #
+        #                              #
+        #         1  =  Image          #
+        #         2  =  Video          #
+        #         3  =  Webcam         #
+        #         4  =  Themes         #
+        #         ESC = Exit           #
+        #                              #
+        ################################
         '''), theme)
 
         mode = win.getch()
 
-        if mode == int(ord('1')):       
-            #convert_img()
-            win.addstr('Not yet implemented')
+        if mode == int(ord('1')):
+            win.addstr('Not yet fully implemented') ##### TODO       
+            convert_img()
             win.refresh()
             time.sleep(1)
 
         elif mode == int(ord('2')):     
-            #convert_vid()
-            win.addstr('Not yet implemented')
+            convert_vid()
+            win.addstr('Not yet implemented\n') ##### TODO
             win.refresh()
             time.sleep(1)
         
-
         elif mode == int(ord('3')): 
             show_webcam()
 
