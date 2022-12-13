@@ -2,27 +2,12 @@ import os, cv2, time
 import curses as c
 from textwrap import dedent
 
-#   C:\Users\msz\Lewis\cpsc\sprint-08\ASCII-Text-Converter\cat.jpg
-
-cx = 640 # webcam pixels x 
-cy = 480 # webcam pixels y 
-
-density = " .:-=+*#%@"    
-dmap = len(density)
+cx = 640                    # webcam pixels x 
+cy = 480                    # webcam pixels y 
+density = " .:-=+*#%@"      
+dmap = len(density)         
 
 win = c.initscr()
-
-
-# serves as alternative to input() compatible with the curses environment
-def cr_input(row, col, prompt, win=win): 
-    c.echo() 
-    win.addstr(row, col, prompt, theme)
-    win.refresh()
-    userinput = win.getstr(row + 1, col, 200)
-    return userinput.decode('utf-8')  
-    # decode('utf-8') converts "bytes object" returned from win.addstr()
-    # into a unicode string compatbile with get_abs_path() and other operations
-
 
 
 def init_themes():
@@ -77,23 +62,28 @@ def theme_menu():
 
 
 def get_abs_path(path): 
-    # Determine if absolute
+    # Determine if absolute, cv2 does not work with relative
     if 'Users' in path or ':' in path: pass 
 
     else: # path is relative
-        dirname = os.path.dirname(__file__) 
-        path = os.path.join(dirname, path) 
-        # gets absolute path of this python file, merges directory tree and
-        # the provided relative path to find the absolute path of the desired file
+        dirname = os.path.dirname(__file__)        # gets path of this file, merges it with 
+        path = os.path.join(dirname, path)         # provided relative path to get abs path of desired image
+
     return path
 
 
 
-def convert_img():
+def convert_img():    # Does not convert image yet. Only displays the provided image in a new window
+    c.echo()
     while True:
-        win.addstr('Sample image "cat.jpg"', theme)
-        img_path = cr_input(14, 0, 'Enter the path to the desired image, or "q" to go back:')
+        win.addstr(dedent('''
+        Not fully implemented
+        Sample image: "cat.jpg"', theme)
+
+        Enter the path to the desired image, or "q" to go back:   '''))
         win.refresh()
+
+        img_path = win.getstr().decode('utf-8')
 
         if img_path == 'q': return None
 
@@ -102,21 +92,21 @@ def convert_img():
             break
         except: 
             c.beep()
-            win.addstr(13, 0, 'Error converting image! Try again or enter "q" to go back', theme)
+            win.addstr('\nError converting image! Try again or enter "q" to go back', theme)
             win.refresh()
 
     img_ascii = cv2.imread(img)
+    
     cv2.imshow('Image', img_ascii)
 
-    #win.nodelay(True)
-    #if win.getch() == 27:
     if cv2.waitKey(0) == 27:
         cv2.destroyAllWindows()
 
 
-
 def convert_vid():
-    pass
+    win.addstr('\nNot yet implemented')
+    win.refresh()
+    time.sleep(1)
 
 
 
@@ -147,17 +137,14 @@ def show_webcam(mirror=True):
 
 def asciify(frame):
     max_brightness = max(max(row) for row in frame)
-    height, width = win.getmaxyx() # terminal dimensions
-
-    for row in range(height-1):
+    height, width = win.getmaxyx()          # Image resolution is determined by the size of the terminal. 
+                                            # Try using CTRL - or  CTRL + (must be prior to running, though.
+    for row in range(height-1):             # It will not work during execution.)
         for column in range(width-1):
-
-            # to get brightness of each pixel, first find the terminal window indicies (x, y) corresponding to camera frame indicies (cx, cy)
-            # !!! the camera/frame and window are most likely different dimensions so they must be scaled w/ equation:
-            # win index = frame index / win dimensions * frame dimensions
-            y = frame[int(row / float(height) * cy)] 
-            x = y[int(column / float(width) * cx)]
-
+            
+            y = frame[int(row / float(height) * cy)]                # to get brightness of each pixel, first find the terminal window indicies (x, y) corresponding to camera frame indicies (cx, cy)
+            x = y[int(column / float(width) * cx)]                  # !!! the camera/frame and window are most likely different dimensions so they must be scaled w/ the equation:
+                                                                    # win index = frame index / win dimensions * frame dimensions
             pixel_brightness = x / max_brightness
 
             win.addstr(row, column, density[int(pixel_brightness * (dmap - 1))], theme)
@@ -195,20 +182,14 @@ def main(win):
 
         mode = win.getch()
 
-        if mode == int(ord('1')):
-            win.addstr('Not yet fully implemented') ##### TODO       
+        if mode == int(ord('1')):     
             convert_img()
-            win.refresh()
-            time.sleep(1)
 
         elif mode == int(ord('2')):     
             convert_vid()
-            win.addstr('Not yet implemented\n') ##### TODO
-            win.refresh()
-            time.sleep(1)
         
         elif mode == int(ord('3')): 
-            show_webcam()
+            show_webcam() 
 
         elif mode == int(ord('4')):
             theme_menu()
