@@ -1,4 +1,4 @@
-## **ASCII image/video converter for Python**
+## **Live ASCII webcam converter for Python**
 
 
 Requires OpenCV and curses libraries to be installed separately before running
