@@ -28,6 +28,8 @@ https://www.geeksforgeeks.org/python-opencv-capture-video-from-camera/
 
 #### ***Contact***
 
+By Michael Szostak
+
 *Discord:*  wikey#4133
 
 *Email:*  michaeldszostak@lewisu.edu  *OR*  mszo@tuta.io
