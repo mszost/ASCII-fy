@@ -85,27 +85,27 @@ def get_abs_path(path):
 def convert_img():    # Does not convert image yet. Only displays the provided image in a new window
     c.echo()
     while True:
-        win.addstr(dedent('''
-        Not fully implemented
-        Sample image: "cat.jpg"', theme)
-
-        Enter the path to the desired image, or "q" to go back:   '''))
-        win.refresh()
-
-        img_path = win.getstr().decode('utf-8')
-        if img_path == 'q': return None
-
         try:
-            img = get_abs_path(img_path)
-            break
-        except: 
-            c.beep()
-            win.addstr('\nError converting image! Try again or enter "q" to go back', theme)
+            win.addstr(dedent('''
+            Not fully implemented
+            Sample image: "cat.jpg"
+
+            Enter the path to the desired image, or "q" to go back:   '''), theme)
             win.refresh()
 
-    img_ascii = cv2.imread(img)
-    
-    cv2.imshow('Image', img_ascii)
+            img_path = win.getstr().decode('utf-8')
+            if img_path == 'q': return None
+
+            img = cv2.imread(get_abs_path(img_path))
+            cv2.imshow('Image', img)
+            break
+
+        except: 
+            c.beep()
+            win.clear()
+            win.addstr('\nError converting image! Try again or enter "q" to go back\n', theme)
+            win.refresh()
+
 
     if cv2.waitKey(0) == 27:
         cv2.destroyAllWindows()
@@ -174,12 +174,11 @@ def main(win):
         win.clear()
         win.refresh()
 
-        win.addstr(dedent('''
-              Welcome to ASCII-fy!      
+        win.addstr(dedent('''      
         ################################
+        #      Welcome to ASCII-fy!    #
         #                              #
-        #         Controls Menu        #
-        #                              #
+        #          Controls:           #
         #         1  =  Image          #
         #         2  =  Video          #
         #         3  =  Webcam         #
