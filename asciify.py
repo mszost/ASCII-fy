@@ -37,7 +37,7 @@ def init_themes(line = int(rfile.readline())):
     c.init_pair(7, 27, 25)              # melange
     c.init_pair(8, 20, 25)              # powershell 
 
-    if line in range(1,9): 
+    if line in range(1,9):  # load selected theme if it is in range
         theme = c.color_pair(line)
     rfile.close()
 
@@ -61,12 +61,12 @@ def theme_menu():
 
     key = int(win.getkey())
     
-    try: 
+    try: # changing to selected theme and saving it to text file
         theme = c.color_pair(key)
         wfile = open('theme.txt', 'w+')
         wfile.write(str(key))
 
-    except ValueError: return None
+    except ValueError: return None 
 
 
 
