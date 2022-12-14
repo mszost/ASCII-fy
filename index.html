@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <link rel="stylesheet" href="FPP.css">
+    <title>Final Project Proposal - MS</title>
+    <meta charset="UTF-8">
+</head>
+    <body>
+
+        <h1> ASCII Webcam </h1>
+        <i> Proposal last updated: 11/3/22 </i>    
+        <hr>
+
+        <h3> Team Members </h3>
+        <p> I will be working alone. </p>
+
+        <img src="example-img.jpg" alt="example image">
+
+        <h3> Application Overview </h3>
+        <p>
+            Takes the users webcam view or an image specified by the user as its input 
+            and displays an ASCII text "drawing". The final result should look similar 
+            to the image on the right  →
+        </br> 
+
+            <div class="mono">
+                This is an illusion created by the nature of monospace fonts.         
+                Characters all take up the same amount of space regardless of pixel density.           
+                Becuase of this, a very dense character like "@" can represent a white "pixel" of
+                the image and "." or even a space character can represent black. (The inverse would
+                be true for an environment with a white background and black text) 
+                <br> If you can't make out the image, try to squint your eyes a bit or zoom out 
+                slightly. It should resemble a bald man with a beard.
+            </div>
+        </p>
+
+        <h3> Technology Overview </h3>
+        <ul>
+            <li>
+                Python language
+            </li>
+    <br>
+            <li>
+                <b>os</b> module for selecting image files
+            </li>
+    <br>
+            <li>
+                <b>cv2</b> module for accessing camera and editing image
+            </li>
+    <br>    
+            <li>
+                Most likely based on terminal
+            </li>
+        </ul>
+
+        <h3> Feature List </h3>
+        <ul>
+            <li>
+                Performs operations on the image to make it easier to translate into ASCII.
+                This would include changing the image to a lower resolution, making it black
+                and white, and likely other steps that are undertermined at this time.
+            </li>
+    <br>
+            <li>
+                "Zones" of the image are assigned a value based on the average
+                brightness of the pixels in each zone.
+            </li>
+    <br>
+            <li>
+                Each ASCII character in a predermined set is assigned to a range of brightness 
+                values. The correct character is displayed in each zone based on the corresponding
+                average brightness value of that zone.
+            </li>
+        </ul>
+
+        <h3>Future Feature List</h3>
+        <ul>
+            <li>
+                Toggle that lets the user tell the program whether their terminal background is 
+                light or dark, then uses that information to make the image more legible by 
+                inverting the order of either the ASCII character list or their brightness
+                assignments.
+            </li>
+    <br>
+            <li>
+                Instead of just a single frame/image turned into one drawing, process live video
+                feed from the webcam. Zones and ASCII characters are updated at a consistent
+                framerate until the user terminates the program.
+            </li>
+        </ul>
+
+        <h3> Basic Technical Features </h3>
+        <ul>
+            <li>
+                Python and external Python libraries
+            </li>
+    <br>
+            <li>
+                Source code hosted on GitHub
+            </li>
+    <br>
+            <li>
+                I might attempt to turn this into an Azure web app. Would be implemented 
+                through <a href="https://pythonistaplanet.com/pyscript/">Pyscript.</a>
+                It might work or it might not, but either way I do want to continue using Python 
+                and not Javascript because I am much more familiar with the former.
+            </li>
+        </ul>
+
+        <h3> Advanced Technical Features </h3>
+        <ul>
+            <li>
+                If there is any difficulty with formatting the text I might have to use a method
+                other than command line
+            </li>
+    <br>
+            <li>
+                The use of the cv2 / OpenCV module
+            </li>
+        </ul>

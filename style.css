@@ -1,0 +1,23 @@
+@font-face { 
+    font-family: 'AHL'; 
+    src: url('AtkinsonHyperlegible-Regular.ttf'); 
+} 
+
+.mono {
+    font-family: monospace;
+    color: white;
+    background-color: black;
+    padding: 15px;
+}
+
+img {
+    float: right; 
+    height: 350; 
+    width: auto;
+    padding: 10px;
+    background-color: white;
+}
+
+body {
+    font-family: 'AHL'
+}
