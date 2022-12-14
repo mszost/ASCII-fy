@@ -1,7 +1,8 @@
-## **Live ASCII webcam converter for Python**
+## **Live ASCII webcam filter**
 
+Made with Python.
 
-Requires OpenCV and curses libraries to be installed separately before running
+Requires OpenCV and curses libraries to be installed separately before running.
 
 
 ---
