@@ -4,13 +4,14 @@ from textwrap import dedent
 
 cx = 640                    # webcam pixels x 
 cy = 480                    # webcam pixels y 
-density = " .:-=+*#%@"      
-dmap = len(density)         
-
+density = " .:-=+*#%@"
+dmap = len(density)
 win = c.initscr()
+rfile = open('theme.txt', 'r+')
 
 
-def init_themes():
+def init_themes(line = int(rfile.readline())):
+    global theme
     # custom color IDs starting at 17. 0-16 are used by curses for basic 8-bit colors 
     c.init_color(17, 875, 790, 670)     # beige
     c.init_color(18, 165, 65, 0)        # brown 
@@ -34,13 +35,16 @@ def init_themes():
     c.init_pair(5, 24, 25)              # vaporwave 
     c.init_pair(6, 28, 29)              # sunset
     c.init_pair(7, 27, 25)              # melange
-    c.init_pair(8, 20, 25)              # powershell    
+    c.init_pair(8, 20, 25)              # powershell 
 
+    if line in range(1,9): 
+        theme = c.color_pair(line)
+    rfile.close()
 
 
 def theme_menu():
     global theme
-    win.addstr(dedent(('''
+    win.addstr(dedent('''
     Enter the number corresponding to the desired terminal theme.
 
       0  =  Grayscale  ------- ( default       )
@@ -52,12 +56,17 @@ def theme_menu():
       6  =  Sunset  ---------- ( orange/yellow )
       7  =  Melange  --------- ( blue/cyan     )
       8  =  PowerShell  ------ ( blue/white    )
-    ''')))
-
+    '''))
     win.refresh()
-    try: theme = c.color_pair(int(win.getkey()))
+
+    key = int(win.getkey())
+    
+    try: 
+        theme = c.color_pair(key)
+        wfile = open('theme.txt', 'w+')
+        wfile.write(str(key))
+
     except ValueError: return None
-    #TODO: use a text file and the os lib to store theme setting for subsequent program executions
 
 
 
@@ -84,7 +93,6 @@ def convert_img():    # Does not convert image yet. Only displays the provided i
         win.refresh()
 
         img_path = win.getstr().decode('utf-8')
-
         if img_path == 'q': return None
 
         try:
@@ -101,6 +109,7 @@ def convert_img():    # Does not convert image yet. Only displays the provided i
 
     if cv2.waitKey(0) == 27:
         cv2.destroyAllWindows()
+
 
 
 def convert_vid():
@@ -124,7 +133,7 @@ def show_webcam(mirror=True):
         if mirror: frame = cv2.flip(frame, 1)
 
         frame = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (cx, cy), interpolation=cv2.INTER_AREA) 
-        # convert to grayscale and 640x480
+        # convert feed to grayscale and 640x480
 
         asciify(frame)
         win.refresh()
@@ -196,6 +205,7 @@ def main(win):
 
         elif mode == 27: # 27 = esc key 
             break
+
 
 
 c.wrapper(main)
