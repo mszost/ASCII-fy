@@ -7,12 +7,12 @@
     font-family: monospace;
     color: white;
     background-color: black;
-    padding: 15px;
+    padding: 16px;
 }
 
 img {
     float: right; 
-    height: 350; 
+    height: 350px; 
     width: auto;
     padding: 10px;
     background-color: white;
