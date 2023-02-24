@@ -14,4 +14,4 @@ By Michael Szostak
 
 *Discord:*  wikey#4133
 
-*Email:*  michaeldszostak@lewisu.edu  *OR*  mszo@tuta.io
+*Email:*  michaeldszostak@lewisu.edu  or  mszo@tuta.io
