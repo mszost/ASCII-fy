@@ -1,6 +1,6 @@
 ## **ASCII-fy - Live ASCII webcam filter**
 
-*Final project for CPSC-20000 (Intro to Computer Science)*
+*Final project for CPSC-20000 (Intro to Computer Science), Fall 2022*
 
 
 Made with Python.
