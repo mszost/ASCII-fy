@@ -7,7 +7,7 @@ Made with Python.
 
 Requires OpenCV and curses libraries to be installed separately before running.
 
-Written and tested on Windows. I intend to keep updating and test it on Linux soon, but I have no idea yet if it works there or on Mac.
+Works on Linux and Windows, not sure about Mac.
 
 
 #### ***Contact***
